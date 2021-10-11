@@ -7,6 +7,7 @@ import timeit
 import pdb
 
 starttime = timeit.default_timer()
+print("The code takely roughly 2 mins to scrape")
 # create the file to store result
 csvfile = 'AdvChemIngredients.csv'
 theaders = pd.DataFrame({'product page URL':[],
@@ -37,11 +38,11 @@ def prod_urls(page_soup,class_):
 
 def table_extract(url):
     url = url
-    prod_name = url.split('/')[-1]
     prod_code = ''
     req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
     webpage = urlopen(req).read()
     page_soup = soup(webpage, "lxml")
+    prod_name = page_soup.find(id="document_title").text.strip()    
     df = pd.DataFrame()
     try:
         table = page_soup.find(class_="product-details product-details--full-width product-details--ingredients").find('table')

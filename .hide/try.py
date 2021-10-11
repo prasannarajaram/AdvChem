@@ -14,11 +14,12 @@ theaders.to_csv(csvfile,header=True,index=False)
 
 def table_extract(url):
     url = url
-    prod_name = url.split('/')[-1]
     prod_code = ''
     req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
     webpage = urlopen(req).read()
     page_soup = soup(webpage, "lxml")
+    prod_name = page_soup.find(id="document_title").text.strip()
+    print(title)
     df = pd.DataFrame()
     try:
         table = page_soup.find(class_="product-details product-details--full-width product-details--ingredients").find('table')
@@ -46,13 +47,11 @@ def table_extract(url):
         row.insert(1, prod_name)
         row.insert(2, prod_code)
         rows.append(row)
-        print(rows)
         df = df.append(rows[0:])        
     return df
 
 
-urls = ['https://www.advantagechemical.com/products/three-compartment-sink/sani-tablets',
-        'https://www.advantagechemical.com/products/three-compartment-sink/sani-quat']
+urls = ['https://www.advantagechemical.com/products/three-compartment-sink/sani-tablets']
 
 for url in urls:
     df = table_extract(url)
