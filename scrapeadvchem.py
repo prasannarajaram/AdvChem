@@ -4,10 +4,9 @@ from urllib.request import Request, urlopen
 from bs4 import BeautifulSoup as soup
 import pandas as pd
 import timeit
-import pdb
 
 starttime = timeit.default_timer()
-print("The code takely roughly 2 mins to scrape")
+print("The code roughly takes 2 mins to scrape. Please wait....")
 # create the file to store result
 csvfile = 'AdvChemIngredients.csv'
 theaders = pd.DataFrame({'product page URL':[],
@@ -17,6 +16,7 @@ theaders = pd.DataFrame({'product page URL':[],
                          'CAS#':[] ,
                          'function':[]})
 theaders.to_csv(csvfile,header=True,index=False)
+
 
 def page_soup(url):
     url = url
@@ -45,7 +45,8 @@ def table_extract(url):
     prod_name = page_soup.find(id="document_title").text.strip()    
     df = pd.DataFrame()
     try:
-        table = page_soup.find(class_="product-details product-details--full-width product-details--ingredients").find('table')
+        search="product-details product-details--full-width product-details--ingredients"
+        table = page_soup.find(class_=search).find('table')
         rows = []
         for child in table.tbody.children:
             row = []
@@ -60,7 +61,6 @@ def table_extract(url):
                 row.insert(2, prod_code)
                 rows.append(row)
         df = pd.DataFrame(rows[0:], columns=rows[0])
-        # df.to_csv('AdvChemIngredients.csv', mode = 'a', header=False, index=False)
     except AttributeError:
         rows = []
         row = []
@@ -70,6 +70,7 @@ def table_extract(url):
         rows.append(row)
         df = df.append(rows[0:])
     return df
+
 
 main_url = 'https://www.advantagechemical.com/products/'
 page = page_soup(main_url)
@@ -83,12 +84,3 @@ for url in prod_type_url:
         df.to_csv(csvfile, mode = 'a', header=False, index=False)
 
 print(f"Scraping took - {timeit.default_timer() - starttime:.2f} seconds")
-
-
-
-
-
-
-
-
-
